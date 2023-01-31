@@ -1,7 +1,7 @@
 ---
 title: "Lab 04 - La Quinta is Spanish for next to Denny's, Pt. 1"
-author: "Insert your name here"
-date: "Insert date here"
+author: "Ben Hardin"
+date: "1/31/2023"
 output: github_document
 ---
 
@@ -14,22 +14,30 @@ library(dsbox)
 
 ```{r load-data, message = FALSE}
 states <- read_csv("data/states.csv")
+dennys <- dennys
+laquinta <- laquinta
 ```
 
 ### Exercise 1
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+The Denny's dataset has 6 columns and 1643 rows. In this datafile, rows are individual Denny's. There are 6 variables (columns), representing each Denny's address, city, state, zip code, and longitude and latitude coordinates.
+
+```{r dimensions-of-dennys}
+#getting rows and columns of dennys
+nrow(dennys)
+ncol(dennys)
+summary(dennys)
+```
 
 ### Exercise 2
 
-Remove this text, and add your answer for Exercise 2 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+The Laquinta dataset has 6 columns and 909 rows. Again, the rows represent individual LaQuinta Inn locations. The 6 variables are the same ones we saw in the Denny's dataset, telling us the location of each Laquinta location. 
 
+```{r dimensions-of-laquinta}
+nrow(laquinta)
+ncol(laquinta)
+summary(laquinta)
+```
 ### Exercise 3
 
 ...
