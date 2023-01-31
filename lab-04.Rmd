@@ -40,20 +40,31 @@ summary(laquinta)
 ```
 ### Exercise 3
 
-...
+From looking at the website, I can see that Denny's has no locations outside the US. LaQuinta on the other hand has several locations in other countries. These include countries like Canada, Chile, China, Columbia, New Zealand, Turkey, and the UAE.
 
 ### Exercise 4
 
-...
+We could also figure out whether these establishments have locations in other countries using just the datasets we have. Given the information we have, it seems like some options would be getting either the states or the zip codes for each location, and filtering for whether the state or zip code for each location is a place in the US or in a different country.
 
 ### Exercise 5
 
-...
+There are 0 Denny's locations left after filtering for states that are not in the US. This confirms what we saw earlier on the website, that there are no Denny's outside the US.
 
+```{r states-of-dennys}
+dennys %>%
+  filter(!(state %in% states$abbreviation))
+```
 ### Exercise 6
 
-...
+The code chunk below makes a new variable for whether each Denny's is located in the US or another country. We now have a new dataset with 7 variables, one of which is our new country variable! Confirming our earlier findings, all 1643 observations in the dataset are Denny's located in the US.
 
- 
-Add exercise headings as needed.
+```{r making-us-dennys-variable}
+dennys <- dennys %>%
+  mutate(country_us = if_else(state %in% states$abbreviation, "United States", "other"))
 
+#did it work?
+summary(dennys)
+
+dennys %>%
+  count(country_us)
+```
