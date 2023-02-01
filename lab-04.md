@@ -164,3 +164,191 @@ dennys %>%
     ##   country_us        n
     ##   <chr>         <int>
     ## 1 United States  1643
+
+### Exercise 7
+
+Running similar code on the La Quinta dataset shows us that there are 14
+La Quinta locations outside the US. Now, let’s consult professor google
+to figure out which country each of these locations are in, and then
+plug those into the code for Ex. 8 to make a country variable.
+
+``` r
+laquinta %>%
+  filter(!(state %in% states$abbreviation))
+```
+
+    ## # A tibble: 14 × 6
+    ##    address                                     city  state zip   longi…¹ latit…²
+    ##    <chr>                                       <chr> <chr> <chr>   <dbl>   <dbl>
+    ##  1 Carretera Panamericana Sur KM 12            "\nA… AG    20345  -102.    21.8 
+    ##  2 Av. Tulum Mza. 14 S.M. 4 Lote 2             "\nC… QR    77500   -86.8   21.2 
+    ##  3 Ejercito Nacional 8211                      "Col… CH    32528  -106.    31.7 
+    ##  4 Blvd. Aeropuerto 4001                       "Par… NL    66600  -100.    25.8 
+    ##  5 Carrera 38 # 26-13 Avenida las Palmas con … "\nM… ANT   0500…   -75.6    6.22
+    ##  6 AV. PINO SUAREZ No. 1001                    "Col… NL    64000  -100.    25.7 
+    ##  7 Av. Fidel Velazquez #3000 Col. Central      "\nM… NL    64190  -100.    25.7 
+    ##  8 63 King Street East                         "\nO… ON    L1H1…   -78.9   43.9 
+    ##  9 Calle Las Torres-1 Colonia Reforma          "\nP… VE    93210   -97.4   20.6 
+    ## 10 Blvd. Audi N. 3 Ciudad Modelo               "\nS… PU    75010   -97.8   19.2 
+    ## 11 Ave. Zeta del Cochero No 407                "Col… PU    72810   -98.2   19.0 
+    ## 12 Av. Benito Juarez 1230 B (Carretera 57) Co… "\nS… SL    78399  -101.    22.1 
+    ## 13 Blvd. Fuerza Armadas                        "con… FM    11101   -87.2   14.1 
+    ## 14 8640 Alexandra Rd                           "\nR… BC    V6X1…  -123.    49.2 
+    ## # … with abbreviated variable names ¹​longitude, ²​latitude
+
+### Exercise 8
+
+Great, now we have a country variable! We can see that, in this dataset,
+there are 10 La Quintas in Mexico, 2 in Canada, 1 in Honduras, and 1 in
+Columbia
+
+``` r
+laquinta <- laquinta %>%
+  mutate(country = case_when(
+    state %in% states$abbreviation  ~ "United States",
+    state %in% c("ON", "BC")  ~ "Canada",
+    state %in% c("AG", "QR", "CH", "NL", "VE", "PU", "SL")  ~ "Mexico",
+    state == "ANT"  ~ "Colombia",
+    state == "FM"  ~ "Honduras"
+  ))
+
+#did it work?
+summary(laquinta)
+```
+
+    ##    address              city              state               zip           
+    ##  Length:909         Length:909         Length:909         Length:909        
+    ##  Class :character   Class :character   Class :character   Class :character  
+    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+    ##                                                                             
+    ##                                                                             
+    ##                                                                             
+    ##    longitude          latitude        country         
+    ##  Min.   :-149.91   Min.   : 6.225   Length:909        
+    ##  1st Qu.:-100.48   1st Qu.:30.475   Class :character  
+    ##  Median : -95.27   Median :34.082   Mode  :character  
+    ##  Mean   : -94.79   Mean   :35.038                     
+    ##  3rd Qu.: -84.35   3rd Qu.:39.199                     
+    ##  Max.   : -70.28   Max.   :64.824
+
+``` r
+laquinta %>%
+  count(country)
+```
+
+    ## # A tibble: 5 × 2
+    ##   country           n
+    ##   <chr>         <int>
+    ## 1 Canada            2
+    ## 2 Colombia          1
+    ## 3 Honduras          1
+    ## 4 Mexico           10
+    ## 5 United States   895
+
+### Exercise 9
+
+Both Denny’s and LaQuinta have a majority of their locations in
+California, Texas, and Florida. This isn’t very surprising because these
+are 3 highly populated states. I also learned from professor google that
+the high concentration of locations in CA and TX can also be explained
+by the fact that Denny’s and LaQuinta were founded in California and
+Texas, respectively.
+
+``` r
+dennys %>%
+  count(state) %>%
+  arrange(desc(n))
+```
+
+    ## # A tibble: 51 × 2
+    ##    state     n
+    ##    <chr> <int>
+    ##  1 CA      403
+    ##  2 TX      200
+    ##  3 FL      140
+    ##  4 AZ       83
+    ##  5 IL       56
+    ##  6 NY       56
+    ##  7 WA       49
+    ##  8 OH       44
+    ##  9 MO       42
+    ## 10 PA       40
+    ## # … with 41 more rows
+
+``` r
+laquinta %>%
+  filter(country == "United States") %>%
+  count(state) %>%
+  arrange(desc(n))
+```
+
+    ## # A tibble: 48 × 2
+    ##    state     n
+    ##    <chr> <int>
+    ##  1 TX      237
+    ##  2 FL       74
+    ##  3 CA       56
+    ##  4 GA       41
+    ##  5 TN       30
+    ##  6 OK       29
+    ##  7 LA       28
+    ##  8 CO       27
+    ##  9 NM       19
+    ## 10 NY       19
+    ## # … with 38 more rows
+
+### Exercise 10
+
+Both Denny’s and La Quinta have a large number of locations per square
+mile both in states where they have a lot of locations in general, like
+California, Texas, and Florida, as well as geographically small states
+like Rhode Island, Connecticut, and Maryland.
+
+``` r
+#dennys locations by square miles
+dennys %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(locations_per_sqm = (n/area)) %>%
+  arrange(desc(locations_per_sqm))
+```
+
+    ## # A tibble: 51 × 5
+    ##    state     n name                     area locations_per_sqm
+    ##    <chr> <int> <chr>                   <dbl>             <dbl>
+    ##  1 DC        2 District of Columbia     68.3          0.0293  
+    ##  2 RI        5 Rhode Island           1545.           0.00324 
+    ##  3 CA      403 California           163695.           0.00246 
+    ##  4 CT       12 Connecticut            5543.           0.00216 
+    ##  5 FL      140 Florida               65758.           0.00213 
+    ##  6 MD       26 Maryland              12406.           0.00210 
+    ##  7 NJ       10 New Jersey             8723.           0.00115 
+    ##  8 NY       56 New York              54555.           0.00103 
+    ##  9 IN       37 Indiana               36420.           0.00102 
+    ## 10 OH       44 Ohio                  44826.           0.000982
+    ## # … with 41 more rows
+
+``` r
+#laquinta locations by square miles
+laquinta %>%
+  filter(country == "United States") %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(locations_per_sqm = (n/area)) %>%
+  arrange(desc(locations_per_sqm))
+```
+
+    ## # A tibble: 48 × 5
+    ##    state     n name             area locations_per_sqm
+    ##    <chr> <int> <chr>           <dbl>             <dbl>
+    ##  1 RI        2 Rhode Island    1545.          0.00129 
+    ##  2 FL       74 Florida        65758.          0.00113 
+    ##  3 CT        6 Connecticut     5543.          0.00108 
+    ##  4 MD       13 Maryland       12406.          0.00105 
+    ##  5 TX      237 Texas         268596.          0.000882
+    ##  6 TN       30 Tennessee      42144.          0.000712
+    ##  7 GA       41 Georgia        59425.          0.000690
+    ##  8 NJ        5 New Jersey      8723.          0.000573
+    ##  9 MA        6 Massachusetts  10554.          0.000568
+    ## 10 LA       28 Louisiana      52378.          0.000535
+    ## # … with 38 more rows

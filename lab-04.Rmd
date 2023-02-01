@@ -68,3 +68,69 @@ summary(dennys)
 dennys %>%
   count(country_us)
 ```
+
+### Exercise 7
+
+Running similar code on the La Quinta dataset shows us that there are 14 La Quinta locations outside the US. Now, let's consult professor google to figure out which country each of these locations are in, and then plug those into the code for Ex. 8 to make a country variable.
+
+```{r states-of-laquinta}
+laquinta %>%
+  filter(!(state %in% states$abbreviation))
+```
+
+### Exercise 8
+
+Great, now we have a country variable! We can see that, in this dataset, there are 10 La Quintas in Mexico, 2 in Canada, 1 in Honduras, and 1 in Columbia
+
+```{r making-us-laquinta-variable}
+laquinta <- laquinta %>%
+  mutate(country = case_when(
+    state %in% states$abbreviation  ~ "United States",
+    state %in% c("ON", "BC")  ~ "Canada",
+    state %in% c("AG", "QR", "CH", "NL", "VE", "PU", "SL")  ~ "Mexico",
+    state == "ANT"  ~ "Colombia",
+    state == "FM"  ~ "Honduras"
+  ))
+
+#did it work?
+summary(laquinta)
+
+laquinta %>%
+  count(country)
+```
+
+### Exercise 9
+
+Both Denny's and LaQuinta have a majority of their locations in California, Texas, and Florida. This isn't very surprising because these are 3 highly populated states. I also learned from professor google that the high concentration of locations in CA and TX can also be explained by the fact that Denny's and LaQuinta were founded in California and Texas, respectively.
+
+```{r dennys-and-laquinta-by-state}
+dennys %>%
+  count(state) %>%
+  arrange(desc(n))
+
+laquinta %>%
+  filter(country == "United States") %>%
+  count(state) %>%
+  arrange(desc(n))
+```
+
+### Exercise 10
+
+Both Denny's and La Quinta have a large number of locations per square mile both in states where they have a lot of locations in general, like California, Texas, and Florida, as well as geographically small states like Rhode Island, Connecticut, and Maryland.
+
+```{r locations-by-square-mile}
+#dennys locations by square miles
+dennys %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(locations_per_sqm = (n/area)) %>%
+  arrange(desc(locations_per_sqm))
+
+#laquinta locations by square miles
+laquinta %>%
+  filter(country == "United States") %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(locations_per_sqm = (n/area)) %>%
+  arrange(desc(locations_per_sqm))
+```
