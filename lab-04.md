@@ -134,7 +134,7 @@ located in the US.
 
 ``` r
 dennys <- dennys %>%
-  mutate(country_us = if_else(state %in% states$abbreviation, "United States", "other"))
+  mutate(country = if_else(state %in% states$abbreviation, "United States", "other"))
 
 #did it work?
 summary(dennys)
@@ -147,7 +147,7 @@ summary(dennys)
     ##                                                                             
     ##                                                                             
     ##                                                                             
-    ##    longitude          latitude      country_us       
+    ##    longitude          latitude       country         
     ##  Min.   :-158.09   Min.   :19.65   Length:1643       
     ##  1st Qu.:-117.33   1st Qu.:33.00   Class :character  
     ##  Median : -96.84   Median :36.05   Mode  :character  
@@ -157,11 +157,11 @@ summary(dennys)
 
 ``` r
 dennys %>%
-  count(country_us)
+  count(country)
 ```
 
     ## # A tibble: 1 × 2
-    ##   country_us        n
+    ##   country           n
     ##   <chr>         <int>
     ## 1 United States  1643
 
@@ -352,3 +352,48 @@ laquinta %>%
     ##  9 MA        6 Massachusetts  10554.          0.000568
     ## 10 LA       28 Louisiana      52378.          0.000535
     ## # … with 38 more rows
+
+Now let’s visualize the relationship between Denny’s and La Quinta for
+the whole United States. Neat!
+
+``` r
+#combining dennys and laquinta datasets
+dennys <- dennys %>%
+  mutate(establishment = "dennys")
+
+laquinta <- laquinta %>%
+  mutate(establishment = "laquinta")
+
+dn_lq <- bind_rows(dennys, laquinta)
+
+#visualizing relationship between dennys and laquinta
+ggplot(dn_lq %>%
+         filter(country == "United States"), mapping = aes(x = longitude,
+                            y = latitude,
+                            color = establishment))+
+  geom_point()
+```
+
+![](lab-04_files/figure-gfm/visualizing-1.png)<!-- --> \### Exercise 11
+
+``` r
+ggplot(dn_lq %>%
+         filter(state == "NC"), mapping = aes(x = longitude,
+                            y = latitude,
+                            color = establishment))+
+  geom_point(size = 3, alpha = 0.5)
+```
+
+![](lab-04_files/figure-gfm/visualizing-NC-1.png)<!-- -->
+
+### Exercise 12
+
+``` r
+ggplot(dn_lq %>%
+         filter(state == "TX"), mapping = aes(x = longitude,
+                            y = latitude,
+                            color = establishment))+
+  geom_point(size = 3, alpha = 0.5)
+```
+
+![](lab-04_files/figure-gfm/visualizing-TX-1.png)<!-- -->
