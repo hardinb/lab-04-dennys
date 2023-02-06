@@ -154,21 +154,32 @@ ggplot(dn_lq %>%
                             color = establishment))+
   geom_point()
 ```
+
 ### Exercise 11
+
+Now we can recreate the previous visualization showing only the Denny's and LaQuinta locations in North Carolina. In this case, there is some truth to Mitch Hedberg's joke, as most of the LaQuinta locations are pretty close to a Denny's, although there are a few stray LaQuintas that aren't near any Denny's, and there are many Denny's located in parts of NC that have no LaQuinta. 
 
 ```{r visualizing-NC}
 ggplot(dn_lq %>%
          filter(state == "NC"), mapping = aes(x = longitude,
                             y = latitude,
                             color = establishment))+
-  geom_point(size = 3, alpha = 0.5)
+  geom_point(size = 3, alpha = 0.5)+
+  labs(title = "Locations of Denny's and LaQuinta Inns in North Carolina")+
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
+
 ### Exercise 12
+
+Now let's create basically the same visualization, but this time for Texas. As we can see, Mitch Hedberg's joke doesn't hold quite as well here, because there are so many LaQuintas located in places where there is no Denny's. However, it does seem that, in places where there is a Denny's in Texas, there is likely to be a LaQuinta nearby. 
+
 ```{r visualizing-TX}
 ggplot(dn_lq %>%
          filter(state == "TX"), mapping = aes(x = longitude,
                             y = latitude,
                             color = establishment))+
-  geom_point(size = 3, alpha = 0.5)
+  geom_point(size = 3, alpha = 0.5)+
+  labs(title = "Locations of Denny's and LaQuinta Inns in Texas")+
+  theme(plot.title = element_text(hjust = 0.5))
 ```
